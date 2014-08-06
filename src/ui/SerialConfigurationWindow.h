@@ -60,6 +60,10 @@ public slots:
     void setParityEven(bool accept);
     void setPortName(QString port);
     void setLinkName(QString name);
+    void setHeaderCombo(QString header); // PabloAG
+    void setHeaderLine(QString header); // PabloAG
+    void setHeaderCheck(bool result); // PabloAG
+    void setHeaderOther(bool result); // PabloAG
     /**
      * @brief setupPortList Populates the dropdown with the list of available serial ports.
      * This function is called at 1s intervals to check that the serial port still exists and to see if

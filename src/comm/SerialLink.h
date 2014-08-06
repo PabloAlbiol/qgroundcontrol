@@ -113,6 +113,8 @@ public:
 
     int getId() const;
 
+    void setHeader(QString setHeader); // PabloAG
+
 signals: //[TODO] Refactor to Linkinterface
     void updateLink(LinkInterface*);
 
@@ -169,6 +171,8 @@ private:
     QByteArray m_transmitBuffer; // An internal buffer for receiving data from member functions and actually transmitting them via the serial port.
 
     bool hardwareConnect(QString &type);
+
+    QString header; // PabloAG
 
 signals:
     void aboutToCloseFlag();

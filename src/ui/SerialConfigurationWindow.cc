@@ -114,6 +114,10 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
 			ui.baudRate->addItem(QString::number(supportedBaudRates.at(i)), supportedBaudRates.at(i));
 		}
 
+        // PabloAG Predefined headers
+        ui.headerComboBox->addItem("SMS 054.126 ");
+        ui.headerComboBox->addItem("SMS 000.000 ");
+
         // Load current link config
         ui.portName->setCurrentIndex(ui.baudRate->findText(QString("%1").arg(this->link->getPortName())));
 
@@ -136,6 +140,14 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
         ui.advCheckBox->setCheckable(true);
         ui.advCheckBox->setChecked(false);
         ui.advGroupBox->setVisible(false);
+
+        // PabloAG Header signals and slots
+        connect(ui.headerCheckBox, SIGNAL(clicked(bool)), ui.headerGroupBox, SLOT(setVisible(bool)));
+        ui.headerGroupBox->setVisible(false);
+        connect(ui.headerCheckBox, SIGNAL(clicked(bool)), this, SLOT(setHeaderCheck(bool)));
+        connect(ui.otherHeaderCheckBox, SIGNAL(clicked(bool)), this, SLOT(setHeaderOther(bool)));
+        connect(ui.headerComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setHeaderCombo(QString)));
+        connect(ui.headerLineEdit, SIGNAL(textEdited(QString)), this, SLOT(setHeaderLine(QString)));
 
         //connect(this->link, SIGNAL(connected(bool)), this, SLOT());
         //ui.portName->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
@@ -297,3 +309,59 @@ void SerialConfigurationWindow::setLinkName(QString name)
     setWindowTitle(tr("Configuration of ") + link->getName());
 }
 
+// PabloAG
+void SerialConfigurationWindow::setHeaderCombo(QString header)
+{
+    if (ui.otherHeaderCheckBox->isChecked() == false)
+    {
+        qDebug() << "combo " << header;
+        link->setHeader(header);
+    }
+}
+
+// PabloAG
+void SerialConfigurationWindow::setHeaderLine(QString header)
+{
+    if (ui.otherHeaderCheckBox->isChecked() == true)
+    {
+        qDebug() << "line " << header;
+        link->setHeader(header);
+    }
+}
+
+// PabloAG
+void SerialConfigurationWindow::setHeaderCheck(bool result)
+{
+    if (result == false)
+    {
+        link->setHeader(""); // Empty header
+    }
+    else
+    {
+        if (ui.otherHeaderCheckBox->isChecked() == false)
+        {
+            qDebug() << "Othercombo " << ui.headerComboBox->currentText();
+            link->setHeader(ui.headerComboBox->currentText());
+        }
+        else
+        {
+            qDebug() << "Otherline " << ui.headerLineEdit->text();
+            link->setHeader(ui.headerLineEdit->text());
+        }
+    }
+}
+
+// PabloAG
+void SerialConfigurationWindow::setHeaderOther(bool result)
+{
+    if (result)
+    {
+        qDebug() << "Otherotherline " << ui.headerLineEdit->text();
+        link->setHeader(ui.headerLineEdit->text());
+    }
+    else
+    {
+        qDebug() << "Otherothercombo " << ui.headerComboBox->currentText();
+        link->setHeader(ui.headerComboBox->currentText());
+    }
+}

@@ -53,6 +53,7 @@ public:
     virtual int getParityType() const = 0;
     virtual int getDataBitsType() const = 0;
     virtual int getStopBitsType() const = 0;
+    virtual void setHeader(QString header) = 0; // PabloAG
 
 public slots:
     virtual bool setPortName(QString portName) = 0;

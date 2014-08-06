@@ -351,6 +351,13 @@ void SerialLink::writeBytes(const char* data, qint64 size)
     if(m_port && m_port->isOpen()) {
 
         QByteArray byteArray(data, size);
+
+        // PabloAG
+        if (header.isEmpty() == false)
+        {
+            byteArray.prepend(header.toLocal8Bit());
+        }
+
         m_writeMutex.lock();
         m_transmitBuffer.append(byteArray);
         m_writeMutex.unlock();
@@ -918,4 +925,10 @@ bool SerialLink::setStopBitsType(int stopBits)
         emit updateLink(this);
     }
     return accepted;
+}
+
+// PabloAG
+void SerialLink::setHeader(QString setHeader)
+{
+    header = setHeader;
 }
