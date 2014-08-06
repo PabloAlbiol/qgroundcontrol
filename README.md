@@ -1,3 +1,5 @@
+PabloAG - Added options to include a header for MAVLink messages through serial link interface
+
 # QGroundControl
 ## Open Source Micro Air Vehicle Ground Control Station
 
