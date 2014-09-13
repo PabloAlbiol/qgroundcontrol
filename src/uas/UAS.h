@@ -110,6 +110,8 @@ public:
     Q_PROPERTY(double groundSpeed READ getGroundSpeed WRITE setGroundSpeed NOTIFY groundSpeedChanged)
     Q_PROPERTY(double bearingToWaypoint READ getBearingToWaypoint WRITE setBearingToWaypoint NOTIFY bearingToWaypointChanged)
     Q_PROPERTY(double altitudeAMSL READ getAltitudeAMSL WRITE setAltitudeAMSL NOTIFY altitudeAMSLChanged)
+    Q_PROPERTY(double altitudeAMSLFT READ getAltitudeAMSLFT NOTIFY altitudeAMSLFTChanged)
+    Q_PROPERTY(double altitudeWGS84 READ getAltitudeWGS84 WRITE setAltitudeWGS84 NOTIFY altitudeWGS84Changed)
     Q_PROPERTY(double altitudeRelative READ getAltitudeRelative WRITE setAltitudeRelative NOTIFY altitudeRelativeChanged)
 
     void setGroundSpeed(double val)
@@ -197,13 +199,34 @@ public:
     {
         altitudeAMSL = val;
         emit altitudeAMSLChanged(val, "altitudeAMSL");
-        emit valueChanged(this->uasId,"altitudeAMSL","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"altitudeAMSL","m",QVariant(altitudeAMSL),getUnixTime());
+        altitudeAMSLFT = 3.28084 * altitudeAMSL;
+        emit altitudeAMSLFTChanged(val, "altitudeAMSLFT");
+        emit valueChanged(this->uasId,"altitudeAMSLFT","m",QVariant(altitudeAMSLFT),getUnixTime());
     }
 
     double getAltitudeAMSL() const
     {
         return altitudeAMSL;
     }
+
+    double getAltitudeAMSLFT() const
+    {
+        return altitudeAMSLFT;
+    }
+
+    void setAltitudeWGS84(double val)
+    {
+        altitudeWGS84 = val;
+        emit altitudeWGS84Changed(val, "altitudeWGS84");
+        emit valueChanged(this->uasId,"altitudeWGS84","m",QVariant(val),getUnixTime());
+    }
+
+    double getAltitudeWGS84() const
+    {
+        return altitudeWGS84;
+    }
+
 
     void setAltitudeRelative(double val)
     {
@@ -453,7 +476,9 @@ protected: //COMMENTS FOR TEST UNIT
 
     double latitude;            ///< Global latitude as estimated by position estimator
     double longitude;           ///< Global longitude as estimated by position estimator
-    double altitudeAMSL;        ///< Global altitude as estimated by position estimator
+    double altitudeAMSL;        ///< Global altitude as estimated by position estimator, AMSL
+    double altitudeAMSLFT;        ///< Global altitude as estimated by position estimator, AMSL
+    double altitudeWGS84;        ///< Global altitude as estimated by position estimator, WGS84
     double altitudeRelative;    ///< Altitude above home as estimated by position estimator
 
     double satelliteCount;      ///< Number of satellites visible to raw GPS
@@ -788,6 +813,10 @@ public slots:
     void sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, float rollspeed, float pitchspeed, float yawspeed,
                         float xmag, float ymag, float zmag, float abs_pressure, float diff_pressure, float pressure_alt, float temperature, quint32 fields_changed);
 
+    /** @brief Send Optical Flow sensor message for HIL, (arguments and units accoding to mavlink documentation*/
+    void sendHilOpticalFlow(quint64 time_us, qint16 flow_x, qint16 flow_y, float flow_comp_m_x,
+                            float flow_comp_m_y, quint8 quality, float ground_distance);
+
     /**
      * @param time_us
      * @param lat
@@ -963,6 +992,8 @@ signals:
     void longitudeChanged(double val,QString name);
     void latitudeChanged(double val,QString name);
     void altitudeAMSLChanged(double val,QString name);
+    void altitudeAMSLFTChanged(double val,QString name);
+    void altitudeWGS84Changed(double val,QString name);
     void altitudeRelativeChanged(double val,QString name);
     void rollChanged(double val,QString name);
     void pitchChanged(double val,QString name);
@@ -993,7 +1024,8 @@ protected:
     bool hilEnabled;            ///< Set to true if HIL mode is enabled from GCS (UAS might be in HIL even if this flag is not set, this defines the GCS HIL setting)
     bool sensorHil;             ///< True if sensor HIL is enabled
     quint64 lastSendTimeGPS;     ///< Last HIL GPS message sent
-    quint64 lastSendTimeSensors;
+    quint64 lastSendTimeSensors; ///< Last HIL Sensors message sent
+    quint64 lastSendTimeOpticalFlow; ///< Last HIL Optical Flow message sent
     QList<QAction*> actions; ///< A list of actions that this UAS can perform.
 
 

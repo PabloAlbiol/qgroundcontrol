@@ -5,14 +5,13 @@
 #include "MainWindow.h"
 #include "ui_QGCSettingsWidget.h"
 
+#include "JoystickWidget.h"
 #include "LinkManager.h"
 #include "MAVLinkProtocol.h"
 #include "MAVLinkSettingsWidget.h"
 #include "GAudioOutput.h"
 
-//, Qt::WindowFlags flags
-
-QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
+QGCSettingsWidget::QGCSettingsWidget(JoystickInput *joystick, QWidget *parent, Qt::WindowFlags flags) :
     QDialog(parent, flags),
     mainWindow((MainWindow*)parent),
     ui(new Ui::QGCSettingsWidget)
@@ -23,6 +22,9 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
     QRect position = frameGeometry();
     position.moveCenter(QApplication::desktop()->availableGeometry().center());
     move(position.topLeft());
+
+    // Add the joystick settings pane
+    ui->tabWidget->addTab(new JoystickWidget(joystick, this), "Controllers");
 
     // Add all protocols
     QList<ProtocolInterface*> protocols = LinkManager::instance()->getProtocols();
@@ -61,7 +63,8 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
     ui->customModeComboBox->addItem(tr("Default: Generic MAVLink and serial links"), MainWindow::CUSTOM_MODE_NONE);
     ui->customModeComboBox->addItem(tr("Wifi: Generic MAVLink, wifi or serial links"), MainWindow::CUSTOM_MODE_WIFI);
     ui->customModeComboBox->addItem(tr("PX4: Optimized for PX4 Autopilot Users"), MainWindow::CUSTOM_MODE_PX4);
-    ui->customModeComboBox->addItem(tr("APM: Optimized for ArduPilot Users"), MainWindow::CUSTOM_MODE_APM);
+    // XXX we need to polish the APM view mode before re-enabling this
+    //ui->customModeComboBox->addItem(tr("APM: Optimized for ArduPilot Users"), MainWindow::CUSTOM_MODE_APM);
 
     ui->customModeComboBox->setCurrentIndex(ui->customModeComboBox->findData(mainWindow->getCustomMode()));
     connect(ui->customModeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectCustomMode(int)));

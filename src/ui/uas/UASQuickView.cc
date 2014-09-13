@@ -5,7 +5,8 @@
 #include "UASQuickViewTextItem.h"
 #include <QSettings>
 #include <QInputDialog>
-UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
+UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent),
+    uas(NULL)
 {
     quickViewSelectDialog=0;
     m_columnCount=2;
@@ -30,6 +31,8 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     if (uasPropertyValueMap.size() == 0)
     {
         valueEnabled("altitudeAMSL");
+        valueEnabled("altitudeAMSLFT");
+        valueEnabled("altitudeWGS84");
         valueEnabled("altitudeRelative");
         valueEnabled("groundSpeed");
         valueEnabled("distToWaypoint");

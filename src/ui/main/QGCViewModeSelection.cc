@@ -13,7 +13,6 @@ QGCViewModeSelection::QGCViewModeSelection(QWidget *parent) :
     connect(ui->viewModeGeneric, SIGNAL(clicked()), this, SLOT(selectGeneric()));
     connect(ui->viewModeAR, SIGNAL(clicked()), this, SLOT(selectWifi()));
     connect(ui->viewModePX4, SIGNAL(clicked()), this, SLOT(selectPX4()));
-    connect(ui->viewModeAPM, SIGNAL(clicked()), this, SLOT(selectAPM()));
     connect(ui->notAgainCheckBox, SIGNAL(clicked(bool)), this, SIGNAL(settingsStorageRequested(bool)));
 }
 
@@ -44,11 +43,5 @@ void QGCViewModeSelection::selectWifi() {
 void QGCViewModeSelection::selectPX4() {
     emit customViewModeSelected(MainWindow::CUSTOM_MODE_PX4);
     mode = MainWindow::CUSTOM_MODE_PX4;
-    selected = true;
-}
-
-void QGCViewModeSelection::selectAPM() {
-    emit customViewModeSelected(MainWindow::CUSTOM_MODE_APM);
-    mode = MainWindow::CUSTOM_MODE_APM;
     selected = true;
 }
